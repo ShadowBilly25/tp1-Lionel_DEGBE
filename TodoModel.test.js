@@ -12,6 +12,15 @@ test('ajouter une tâche notifie les abonnés', () => {
   assert.equal(snapshots[1][0].title, 'Lire le cours');
 });
 
+test('filtrer « faites » ne garde que les tâches cochées', () => {
+ const m = new TodoModel();
+ m.add('A'); m.add('B');
+ m.toggle(m.all()[0].id);
+ assert.deepEqual(m.filtrer('faites').map(t => t.title), ['A']);
+ assert.equal(m.restantes(), 1);
+});
+
+
 test('un titre vide est refusé', () => {
   assert.throws(() => new TodoModel().add('   '), /obligatoire/);
 });

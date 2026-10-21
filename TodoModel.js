@@ -2,7 +2,6 @@
 export class TodoModel {
   #todos = [];
   #listeners = [];
-
   add(title) {
     const clean = title.trim();
     if (!clean) throw new Error('Le titre est obligatoire');
@@ -23,7 +22,23 @@ export class TodoModel {
   all() {
     return this.#todos.map(t => ({ ...t }));
   } // copie défensive
-
+  // Renvoie une copie filtrée : 'toutes' | 'faites' | 'a-faire'
+  filtrer(nom) {
+    switch (nom) {
+      case 'toutes':
+        return this.all();
+      case 'faites':
+        return this.all().filter(t => t.done);
+      case 'a-faire':
+        return this.all().filter(t => !t.done);
+      default:
+        throw new Error(`Filtre inconnu : ${nom}`);
+    }
+  }
+  // Nombre de tâches non faites
+  restantes() {
+    return this.#todos.filter(t => !t.done).length;
+  }
   subscribe(fn) {
     this.#listeners.push(fn);
     fn(this.all());

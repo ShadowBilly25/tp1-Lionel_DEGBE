@@ -7,28 +7,42 @@ export class TodoView {
     this.list = root.querySelector('ul');
     this.counter = root.querySelector('.counter');
     this.error = root.querySelector('.error');
+    this.filterButtons = root.querySelectorAll('[data-filtre]');
   }
-  render(todos) {
+  // La vue affiche la liste et le compteur QU'ON LUI DONNE (aucun calcul ici)
+  render(todos, restantes) {
     this.list.innerHTML = '';
     for (const t of todos) {
       const li = document.createElement('li');
       li.innerHTML = `<label><input type="checkbox" ${t.done ? 'checked' : ''}>
-        <span class="${t.done ? 'done' : ''}"></span></label> <button>✕</button>`;
+ <span class="${t.done ? 'done' : ''}"></span></label> <button>✕</button>`;
       li.querySelector('span').textContent = t.title; // pas d'injection HTML
       li.querySelector('input').onchange = () => this.onToggle?.(t.id);
       li.querySelector('button').onclick = () => this.onRemove?.(t.id);
       this.list.append(li);
     }
-    this.counter.textContent = `${todos.filter(t => !t.done).length} tâche(s) à faire`;
+    this.counter.textContent = `${restantes} tâche(s) à faire`;
   }
   showError(msg) {
     this.error.textContent = msg;
+  }
+  // Met la classe "actif" sur le bon bouton
+  showFiltre(nom) {
+    this.filterButtons.forEach(b => {
+      b.classList.toggle('actif', b.dataset.filtre === nom);
+    });
   }
   bindAdd(handler) {
     this.form.addEventListener('submit', e => {
       e.preventDefault();
       handler(this.input.value);
       this.input.value = '';
+    });
+  }
+  // Transmet le NOM du filtre cliqué, sans rien filtrer
+  bindFilter(handler) {
+    this.filterButtons.forEach(b => {
+      b.addEventListener('click', () => handler(b.dataset.filtre));
     });
   }
   bindToggle(handler) {
